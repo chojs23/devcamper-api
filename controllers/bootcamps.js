@@ -27,7 +27,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   );
 
   // Finding resource
-  query = Bootcamp.find(JSON.parse(queryStr));
+  query = Bootcamp.find(JSON.parse(queryStr)).populate("courses");
 
   // Select Fields
   if (req.query.select) {
@@ -79,7 +79,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc   Get single bootcamps
+// @desc   Get single bootcamp
 // @route  GET /api/v1/bootcamps/:id
 // @access Public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
@@ -93,9 +93,9 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: bootcamp });
 });
 
-// @desc   Create all bootcamps
+// @desc   Create bootcamp
 // @route  POST /api/v1/bootcamps
-// @access Public
+// @access Private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.create(req.body);
 
@@ -105,9 +105,9 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc   Update all bootcamps
+// @desc   Update bootcamp
 // @route  PUT /api/v1/bootcamps/:id
-// @access Public
+// @access Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -123,17 +123,19 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: bootcamp });
 });
 
-// @desc   Delete all bootcamps
+// @desc   Delete bootcamp
 // @route  DELETE /api/v1/bootcamps/:id
-// @access Public
+// @access Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const deletedBootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+  const deletedBootcamp = await Bootcamp.findById(req.params.id);
 
   if (!deletedBootcamp) {
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
     );
   }
+
+  deletedBootcamp.remove();
 
   res.status(200).json({ success: true, data: deletedBootcamp });
 });
