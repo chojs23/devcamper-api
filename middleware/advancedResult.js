@@ -44,7 +44,7 @@ const advancedResult = (model, populate) =>
     const results = await query;
     // Pagination result
     const pagination = {};
-    pagination = {};
+
     if (endIndex < total) {
       pagination.next = {
         page: page + 1,
